@@ -438,29 +438,34 @@
       }
 
       function spawnCrocs(){
-        clearCrocs();
-        const pad = parseFloat(getComputedStyle(lanesEl).paddingLeft) || 12;
+  clearCrocs();
 
-        for(let laneIdx=0; laneIdx<LANES; laneIdx++){
-          if(Math.random() > CROC_CHANCE_PER_LANE) continue;
+  const pad = parseFloat(getComputedStyle(lanesEl).paddingLeft) || 12;
+  const lanesRect = lanesEl.getBoundingClientRect();
+  const contentH  = lanesRect.height - pad * 2;
+  const laneH     = contentH / LANES;
 
-          const minX = 80;
-          const maxX = Math.max(120, distancePx - 120);
-          const x = Math.floor(Math.random() * (maxX - minX)) + minX;
+  for(let laneIdx=0; laneIdx<LANES; laneIdx++){
+    if(Math.random() > CROC_CHANCE_PER_LANE) continue;
 
-          const el = document.createElement('div');
-          el.className = 'croc';
-          el.innerHTML = crocSVG();
+    const minX = 80;
+    const maxX = Math.max(120, distancePx - 120);
+    const x = Math.floor(Math.random() * (maxX - minX)) + minX;
 
-          const laneTop = laneIdx * (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--lane-h')));
+    const el = document.createElement('div');
+    el.className = 'croc';
+    el.innerHTML = crocSVG();
 
-          el.style.left = `${pad + x}px`;
-          el.style.top  = `calc(var(--pad) + ${laneTop}px + var(--lane-h) / 2)`;
-          hazardsEl.appendChild(el);
+    // ❗ hitung top pakai tinggi lane aktual
+    const laneTop = laneIdx * laneH;
+    el.style.left = `${pad + x}px`;
+    el.style.top  = `${pad + laneTop + laneH/2}px`;
 
-          crocs.push({ lane: laneIdx, x, el, hit:false });
-        }
-      }
+    hazardsEl.appendChild(el);
+    crocs.push({ lane: laneIdx, x, el, hit:false });
+  }
+}
+
 
       function makeSplash(px, py){
         const s = document.createElement('div');
