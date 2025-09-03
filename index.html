@@ -116,31 +116,56 @@
 
     /* Winner glow & bounce */
     .duck.win{ filter: drop-shadow(0 0 10px rgba(255,215,0,.9)) drop-shadow(0 0 18px rgba(255,215,0,.6)); }
-    .duck.win svg{ animation: bob 1.2s ease-in-out infinite, winScale .9s ease-in-out infinite; }
+    .duck.win svg{ animation: bob 1.2s ease-in-out infinite, winScale .9s ease-in-out infinite; } 
     @keyframes winScale{ 0%,100%{ transform: translateY(0) scale(1) } 50%{ transform: translateY(3px) scale(1.08) } }
 
     /* Modal */
-    .modal-backdrop{
-      position:fixed; inset:0;
-      background:rgba(0,0,0,.45);
-      display:none; align-items:center; justify-content:center;
-      z-index: 9999;   /* <= dinaikkan */ }    
-    .modal{ background:white; width:min(560px,92vw); border-radius:16px; box-shadow:var(--shadow); overflow:hidden; }
-    .modal header{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px 16px; border-bottom:1px solid #e5e7eb; }
-    .modal header h3{ margin:0; font-size:18px; font-weight:800; }
-    .modal .content{ padding:12px 16px 16px; }
-    .modal .table{ width:100%; border-collapse: collapse; }
-    .modal .table th, .modal .table td{ text-align:left; padding:10px 12px; border-bottom:1px solid #f0f2f5; font-size:14px; }
-    .modal .table th{ background:#f8fafc; font-weight:800; }
-    .pill{ display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:800; background:#eef2ff; color:#3730a3; border:1px solid #e0e7ff; }
-    .muted{ color:#6b7280; font-weight:700; font-size:12px; margin-left:6px; }
-    .close-x{ background:#f3f4f6; color:#111827; border:1px solid #e5e7eb; }
-    .gold{ color:#b45309; } .silver{ color:#4b5563; } .bronze{ color:#92400e; }
+.modal-backdrop{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.45);
+  display:none;                 /* default: sembunyikan */
+  align-items:center; justify-content:center;
+  z-index:9999;                 /* di atas elemen lain */
+}
 
-    @media (max-width:720px){
-      :root{ --river-h:520px; --bank-h:70px; --duck-w:64px; --duck-h:40px; --pad:12px; }
-      .status{ min-width:unset }
-    }
+/* tampilkan backdrop saat .show ditambahkan dari JS */
+.modal-backdrop.show{
+  display:flex;
+  animation:fadeIn .18s ease-out;
+}
+
+.modal{
+  background:#fff; width:min(560px,92vw);
+  border-radius:16px; box-shadow:var(--shadow); overflow:hidden;
+}
+.modal header{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; padding:14px 16px; border-bottom:1px solid #e5e7eb;
+}
+.modal header h3{ margin:0; font-size:18px; font-weight:800; }
+.modal .content{ padding:12px 16px 16px; }
+.modal .table{ width:100%; border-collapse: collapse; }
+.modal .table th, .modal .table td{
+  text-align:left; padding:10px 12px; border-bottom:1px solid #f0f2f5; font-size:14px;
+}
+.modal .table th{ background:#f8fafc; font-weight:800; }
+.pill{ display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:800; background:#eef2ff; color:#3730a3; border:1px solid #e0e7ff; }
+.muted{ color:#6b7280; font-weight:700; font-size:12px; margin-left:6px; }
+.close-x{ background:#f3f4f6; color:#111827; border:1px solid #e5e7eb; }
+.gold{ color:#b45309; } .silver{ color:#4b5563; } .bronze{ color:#92400e; }
+
+/* animasi pop-in untuk konten modal */
+.modal.anim-in{ animation:popIn .18s ease-out; }
+
+/* keyframes */
+@keyframes fadeIn{ from{opacity:0} to{opacity:1} }
+@keyframes popIn{ 0%{ transform:scale(.96); opacity:0 } 100%{ transform:scale(1); opacity:1 } }
+
+@media (max-width:720px){
+  :root{ --river-h:520px; --bank-h:70px; --duck-w:64px; --duck-h:40px; --pad:12px; }
+  .status{ min-width:unset }
+}
+
 
     /* ======== Dekor bank bawah (rumput + crowd + bendera + bebek mini) ======== */
     .bank.bottom .decor{ position:absolute; inset:0; pointer-events:none; }
@@ -552,25 +577,34 @@
         rafId = requestAnimationFrame(tick);
       }
 
-      function tick(now){
-        const elapsed = (now - startTime) / 1000;
-        if (raceState !== 'running') return;
-        ducks.forEach((d, i) => {
-          if(d.finished) return;
-          const jiggle = 1 + Math.sin((elapsed + i * 0.37) * 2.3) * 0.02;
-          d.x = Math.min(distancePx, d.speed * elapsed * jiggle);
-          d.el.style.setProperty('--x', `${d.x}px`);
-          if(d.x >= distancePx && !d.finished){ d.finished = true; d.finishTime = elapsed; }
-        });
-        const finishedCount = ducks.reduce((n,d)=>n + (d.finished?1:0), 0);
-        statusEl.textContent = `Racing… ${elapsed.toFixed(2)}s • ${finishedCount}/${LANES} finished`;
-        if(finishedCount === LANES){ endRace('all-finished'); return; }
-        if(elapsed >= MAX_RACE_S){
-          ducks.forEach(d=>{ if(!d.finished){ d.finished = true; d.finishTime = elapsed; d.x = distancePx; d.el.style.setProperty('--x', `${d.x}px`); } });
-          endRace('timecap'); return;
-        }
-        if(raceState === 'running') rafId = requestAnimationFrame(tick);
-      }
+      function endRace(reason){
+  raceState = 'done';
+  cancelAnimationFrame(rafId);
+
+  ducks.forEach(d => d.el.querySelector('svg').style.animationPlayState = 'paused');
+  const winner = [...ducks].sort((a,b)=>a.finishTime - b.finishTime)[0];
+
+  // (opsional) efek juara: glow/fanfare/confetti di sini...
+
+  // --- Teks status & popup result (WAJIB) ---
+  const timeStr = winner.finishTime.toFixed(2).replace(/\.00$/,'');
+  statusEl.textContent =
+    `${reason==='all-finished' ? 'All finished.' : 'Time capped.'} ` +
+    `Winner: ${winner.name} • ${timeStr}s`;
+
+  // tampilkan bar hijau "result"
+  resultEl.textContent =
+    `🏆 ${winner.name} wins in ${timeStr}s ${reason==='timecap' ? '(time cap)' : ''}!`;
+  resultEl.classList.add('show');
+
+  // enable tombol
+  resetBtn.disabled = false;
+  rankBtn.disabled  = false;
+
+  // --- buka modal ranking ---
+  buildAndShowRanking(); // ini akan memanggil showRanking() -> tambah class .show pada backdrop
+}
+
 
       function endRace(reason){
         raceState = 'done'; cancelAnimationFrame(rafId);
@@ -619,8 +653,16 @@
         }).join('');
         showRanking();
       }
-      function showRanking(){ rankModal.classList.add('show'); rankModal.querySelector('.modal').classList.add('anim-in'); uiPop(); }
-      function hideRanking(){ rankModal.classList.remove('show'); rankModal.querySelector('.modal').classList.remove('anim-in'); }
+      function showRanking(){
+  rankModal.classList.add('show');
+  rankModal.querySelector('.modal').classList.add('anim-in');
+  uiPop();
+}
+function hideRanking(){
+  rankModal.classList.remove('show');
+  rankModal.querySelector('.modal').classList.remove('anim-in');
+}
+
 
       // ======= Mini ducks on bottom bank =======
       function buildMiniDucks(){
