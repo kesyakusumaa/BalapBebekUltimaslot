@@ -294,42 +294,37 @@
       </div>
 
       <div class="bank bottom">
-        <div class="scenery">
-          <div class="rock"></div><div class="tree"><div class="trunk"></div><div class="crown"></div></div>
-          <div class="rock"></div><div class="tree"><div class="trunk"></div><div class="crown"></div></div>
-          <div class="rock"></div><div class="tree"><div class="trunk"></div><div class="crown"></div></div>
-          <div class="rock"></div>
-        </div>
+  <!-- lapisan dekor -->
+  <div class="grass"></div>
+  <div class="crowd"></div>
+  <div class="flags"></div>
+
+  <!-- dekor asli kamu tetap boleh: -->
+  <div class="scenery">
+    <div class="rock"></div>
+    <div class="tree"><div class="trunk"></div><div class="crown"></div></div>
+    <div class="rock"></div>
+
+    <!-- beberapa orang di depan -->
+    <div style="display:flex; align-items:flex-end;">
+      <div class="person" style="--shirt:#f97316">
+        <div class="head"></div><div class="body"></div><div class="arm l"></div><div class="arm r"></div>
+      </div>
+      <div class="person" style="--shirt:#22c55e; animation-delay:.2s">
+        <div class="head"></div><div class="body"></div><div class="arm l"></div><div class="arm r"></div>
+      </div>
+      <div class="person" style="--shirt:#60a5fa; animation-delay:.4s">
+        <div class="head"></div><div class="body"></div><div class="arm l"></div><div class="arm r"></div>
       </div>
     </div>
 
-        <!-- Ground penonton bawah sungai -->
-    <div class="ground" aria-hidden="true">
-      <div class="grass"></div>
-      <div class="crowd"></div>
-      <div class="flags"></div>
+    <div class="tree"><div class="trunk"></div><div class="crown"></div></div>
+    <div class="rock"></div>
+  </div>
+</div>
 
-      <!-- Dekorasi kiri–kanan biar mirip bagian atas -->
-      <div class="scenery">
-        <div class="rock"></div>
-        <div class="tree"><div class="trunk"></div><div class="crown"></div></div>
-        <div class="rock"></div>
-        <!-- beberapa “orang” maskot di depan rumput -->
-        <div style="display:flex; align-items:flex-end;">
-          <div class="person" style="--shirt:#f97316">
-            <div class="head"></div><div class="body"></div><div class="arm l"></div><div class="arm r"></div>
-          </div>
-          <div class="person" style="--shirt:#22c55e; animation-delay:.2s">
-            <div class="head"></div><div class="body"></div><div class="arm l"></div><div class="arm r"></div>
-          </div>
-          <div class="person" style="--shirt:#60a5fa; animation-delay:.4s">
-            <div class="head"></div><div class="body"></div><div class="arm l"></div><div class="arm r"></div>
-          </div>
-        </div>
-        <div class="tree"><div class="trunk"></div><div class="crown"></div></div>
-        <div class="rock"></div>
-      </div>
-    </div>
+
+       
 
 
     <div class="result" id="result"></div>
