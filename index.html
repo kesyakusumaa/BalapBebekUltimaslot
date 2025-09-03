@@ -185,79 +185,6 @@
     .confetti{
       position: fixed; width:8px; height:12px; pointer-events:none; will-change: transform, opacity;
     }
-
-    /* Ground / penonton di bawah sungai */
-.ground {
-  height: var(--bank-h);
-  margin-top: 12px;
-  border-radius: 14px;
-  background: radial-gradient(180px 40px at 10% 60%, #ffffff80, transparent 60%),
-              linear-gradient(180deg, var(--bank) 0%, var(--bank-edge) 100%);
-  position: relative;
-  overflow: hidden;
-  border: 1px solid #ffffff80;
-  box-shadow: inset 0 0 0 1px #00000010;
-  display:flex; align-items:flex-end; padding: 0 10px 8px; /* mirip .bank */
-}
-
-/* Rumput kecil-kecil */
-.ground .grass {
-  position:absolute; inset:0;
-  background:
-    radial-gradient(3px 8px at 12% 86%, #2f7a34 98%, transparent 100%) 0 0/36px 24px repeat,
-    radial-gradient(3px 7px at 32% 88%, #34903a 98%, transparent 100%) 0 0/40px 22px repeat,
-    radial-gradient(2px 6px at 72% 84%, #2f7a34 98%, transparent 100%) 0 0/34px 22px repeat;
-  opacity:.9;
-  pointer-events:none;
-}
-
-/* Kerumunan penonton (silhouette kepala) */
-.ground .crowd{ animation: crowdWave 3.5s ease-in-out infinite; }
-@keyframes crowdWave{ 50%{ transform: translateY(1px) } }
-  /* dua baris kepala biar padat */
-  background:
-    radial-gradient(circle at 8px 18px, #2b2b2b 6.5px, transparent 6.6px) 0 0/34px 20px repeat-x,
-    radial-gradient(circle at 25px 18px, #4b5563 6.5px, transparent 6.6px) 0 2px/34px 20px repeat-x;
-  filter: drop-shadow(0 1px 0 rgba(0,0,0,.2));
-  opacity:.95;
-}
-
-/* Bendera-bendera kecil */
-.ground .flags {
-  position:absolute; top:6px; left:0; right:0; height:12px; pointer-events:none;
-  background:
-    linear-gradient( to bottom, #0000 0 8px, #0003 8px 12px) 0 0/48px 12px repeat-x;
-}
-.ground .flags::before,
-.ground .flags::after{
-  content:""; position:absolute; top:0; height:10px; width:100%;
-  background:
-    linear-gradient(90deg, #ef4444 0 8px, #0000 8px 12px, #3b82f6 12px 20px, #0000 20px 24px, #22c55e 24px 32px) 0 0/48px 10px repeat-x;
-  transform: translateY(-2px) rotate(-2deg); opacity:.9;
-}
-.ground .flags::after{ transform: translateY(2px) rotate(1.6deg); opacity:.85; }
-
-/* Susunan pohon/batu (reuse dari atas) */
-.ground .scenery{
-  display:flex; gap:12px; width:100%; justify-content:space-between;
-  filter: drop-shadow(0 2px 0 rgba(0,0,0,.12));
-  z-index:1;
-}
-
-/* Orang “maskot” sederhana di depan (opsional) */
-.person{
-  width:18px; height:26px; position:relative; margin:0 6px 2px; align-self:flex-end;
-  animation: cheer 1.4s ease-in-out infinite;
-}
-.person .head{ width:10px; height:10px; border-radius:50%; background:#f5d0a3; position:absolute; left:50%; transform:translateX(-50%); top:0; }
-.person .body{ width:14px; height:14px; border-radius:4px; background:var(--shirt,#60a5fa); position:absolute; left:50%; transform:translateX(-50%); top:10px; }
-.person .arm{ position:absolute; width:4px; height:10px; background:var(--shirt,#60a5fa); top:10px; border-radius:2px; transform-origin: top center; }
-.person .arm.l{ left:0; transform: rotate(-28deg); }
-.person .arm.r{ right:0; transform: rotate(28deg); animation: cheerR 1.4s ease-in-out infinite; }
-@keyframes cheer{ 50%{ transform: translateY(-2px) } }
-@keyframes cheerR{ 0%,100%{ transform: rotate(28deg) } 50%{ transform: rotate(6deg) } }
-
-    
   </style>
 </head>
 <body>
@@ -294,38 +221,14 @@
       </div>
 
       <div class="bank bottom">
-  <!-- lapisan dekor -->
-  <div class="grass"></div>
-  <div class="crowd"></div>
-  <div class="flags"></div>
-
-  <!-- dekor asli kamu tetap boleh: -->
-  <div class="scenery">
-    <div class="rock"></div>
-    <div class="tree"><div class="trunk"></div><div class="crown"></div></div>
-    <div class="rock"></div>
-
-    <!-- beberapa orang di depan -->
-    <div style="display:flex; align-items:flex-end;">
-      <div class="person" style="--shirt:#f97316">
-        <div class="head"></div><div class="body"></div><div class="arm l"></div><div class="arm r"></div>
-      </div>
-      <div class="person" style="--shirt:#22c55e; animation-delay:.2s">
-        <div class="head"></div><div class="body"></div><div class="arm l"></div><div class="arm r"></div>
-      </div>
-      <div class="person" style="--shirt:#60a5fa; animation-delay:.4s">
-        <div class="head"></div><div class="body"></div><div class="arm l"></div><div class="arm r"></div>
+        <div class="scenery">
+          <div class="rock"></div><div class="tree"><div class="trunk"></div><div class="crown"></div></div>
+          <div class="rock"></div><div class="tree"><div class="trunk"></div><div class="crown"></div></div>
+          <div class="rock"></div><div class="tree"><div class="trunk"></div><div class="crown"></div></div>
+          <div class="rock"></div>
+        </div>
       </div>
     </div>
-
-    <div class="tree"><div class="trunk"></div><div class="crown"></div></div>
-    <div class="rock"></div>
-  </div>
-</div>
-
-
-       
-
 
     <div class="result" id="result"></div>
     <!-- Footer (di dalam card) -->
