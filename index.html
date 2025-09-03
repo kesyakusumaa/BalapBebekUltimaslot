@@ -167,104 +167,21 @@
 
     /* --- Winner glow & bounce --- */
     .duck.win{
-      z-index: 5;
-      filter:
-        drop-shadow(0 0 14px rgba(255,215,0,.95))
-        drop-shadow(0 0 28px rgba(255,215,0,.55));
+      filter: drop-shadow(0 0 10px rgba(255,215,0,.9)) drop-shadow(0 0 18px rgba(255,215,0,.6));
     }
-    .duck.win svg{
-      animation: bob 1.2s ease-in-out infinite, winScale .9s ease-in-out infinite, winWobble 2.2s ease-in-out infinite;
-    }
+    .duck.win svg{ animation: bob 1.2s ease-in-out infinite, winScale .9s ease-in-out infinite; }
     @keyframes winScale{
-      0%,100%{ transform: translateY(0) scale(1.05) }
-      50%{ transform: translateY(3px) scale(1.12) }
-    }
-    @keyframes winWobble{
-      0%,100%{ transform: translateY(0) scale(1.18) rotate(0deg) }
-      50%{    transform: translateY(3px) scale(1.22) rotate(-1.5deg) }
+      0%,100%{ transform: translateY(0) scale(1) }
+      50%{ transform: translateY(3px) scale(1.08) }
     }
 
-    /* Name tag emas saat menang */
-    .duck.win .nameTag{
-      background: linear-gradient(180deg,#fff6cc,#ffe07a);
-      border-color:#b88900;
-      color:#5a4200;
-      box-shadow:0 2px 0 rgba(0,0,0,.06), 0 0 8px rgba(255,215,0,.6);
-    }
-
-    /* Pulse ring (gelombang kemenangan) */
-    .duck.win::before,
-    .duck.win::after{
-      content:"";
-      position:absolute;
-      left:50%; top:50%;
-      width:90px; height:90px;
-      transform: translate(-50%,-50%);
-      border-radius:50%;
-      background: radial-gradient(closest-side, rgba(255,223,89,.55), rgba(255,223,89,0));
-      filter: blur(1px);
-      z-index:-1;
-      animation: winPulse 1.8s ease-out infinite;
-    }
-    .duck.win::after{ animation-delay: .9s; }
-    @keyframes winPulse{
-      0%{ opacity:.9; transform: translate(-50%,-50%) scale(.6); }
-      100%{ opacity:0; transform: translate(-50%,-50%) scale(1.8); }
-    }
-
-    /* Mahkota */
-    .duck.win > .winner-crown{
-      position:absolute;
-      left:62%; top:-14px;
-      width:36px; height:26px;
-      transform: translateX(-50%) rotate(-6deg);
-      pointer-events:none;
-      background:
-        url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'>\
-<path d='M6 30 L20 10 L32 26 L44 10 L58 30 L6 30Z' fill='%23ffcc33' stroke='%23b58900' stroke-width='3'/>\
-<circle cx='20' cy='10' r='3' fill='%23ffd84d'/>\
-<circle cx='44' cy='10' r='3' fill='%23ffd84d'/>\
-<circle cx='32' cy='26' r='3' fill='%23ffd84d'/>\
-</svg>") no-repeat center/contain;
-      filter: drop-shadow(0 2px 0 rgba(0,0,0,.12));
-    }
-
-    /* Spotlight */
-    .spotlight {
-      position: fixed;
-      width:420px; height:420px;
-      border-radius:50%;
-      pointer-events:none;
-      z-index: 40;
-      box-shadow:
-        0 0 0 9999px rgba(0,0,0,.45),
-        inset 0 0 120px 20px rgba(255,230,120,.55);
-      background: radial-gradient(circle at 50% 50%,
-        rgba(255,240,150,.55) 0%,
-        rgba(255,240,150,.15) 55%,
-        rgba(255,240,150,0) 70%);
-      animation: spotIn .22s ease-out;
-    }
-    @keyframes spotIn{
-      from{ transform: scale(.9); opacity:0 }
-      to  { transform: scale(1);  opacity:1 }
-    }
-
-    /* Pita finish goyang saat kemenangan */
-    .finish.victory{ animation: tapeWiggle .5s ease-in-out 6; }
-    @keyframes tapeWiggle{
-      0%,100%{ transform: translateX(0) }
-      50%{ transform: translateX(-2px) }
-    }
-
-    /* Modal pop-in */
+    /* --- Modal pop-in --- */
     .modal-backdrop.show{ display:flex; animation: fadeIn .18s ease-out; }
     .modal.anim-in{ animation: popIn .18s ease-out; }
     @keyframes fadeIn{ from{ opacity:0 } to{ opacity:1 } }
     @keyframes popIn{ 0%{ transform: scale(.9); opacity:0 } 100%{ transform: scale(1); opacity:1 } }
 
-    /* Confetti */
+    /* --- Confetti --- */
     .confetti{
       position: fixed; width:8px; height:12px; pointer-events:none; will-change: transform, opacity;
     }
@@ -273,7 +190,7 @@
 <body>
   <div class="app card">
     <header>
-      <h1>🐤Balap Bebek Tepi Sungai Ultimaslot</h1>
+      <h1>🐤Balap Bebek Tepi Sungai</h1>
       <div class="badge">10 ducks • 10s max</div>
     </header>
 
@@ -499,6 +416,7 @@
         o.connect(g); g.connect(audioCtx.destination);
         const t0 = audioCtx.currentTime + when;
         o.start(t0);
+        // kecilkan halus di ekor biar gak “click”
         g.gain.setValueAtTime(gain, t0 + Math.max(0, dur - 0.05));
         g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
         o.stop(t0 + dur + 0.005);
@@ -553,70 +471,6 @@
         }
       }
 
-      /* ====== QUACK (tanpa file, WebAudio) ====== */
-      function quack({vol=0.14, when=0}={}){
-        if(!audioCtx) return;
-        const now = audioCtx.currentTime + when;
-
-        // noise “napas”
-        const noiseBuf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.25, audioCtx.sampleRate);
-        const data = noiseBuf.getChannelData(0);
-        for (let i=0; i<data.length; i++) data[i] = (Math.random()*2-1) * 0.6;
-
-        const noise = audioCtx.createBufferSource();
-        noise.buffer = noiseBuf;
-
-        const bp = audioCtx.createBiquadFilter();
-        bp.type = 'bandpass';
-        bp.frequency.setValueAtTime(850, now);
-        bp.Q.setValueAtTime(6, now);
-
-        const ng = audioCtx.createGain();
-        ng.gain.setValueAtTime(0.0001, now);
-        ng.gain.exponentialRampToValueAtTime(vol, now + 0.02);
-        ng.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
-
-        noise.connect(bp); bp.connect(ng); ng.connect(audioCtx.destination);
-        noise.start(now); noise.stop(now + 0.22);
-
-        // osc “mulut”
-        const o = audioCtx.createOscillator();
-        const og = audioCtx.createGain();
-        o.type = 'square';
-        o.frequency.setValueAtTime(420, now);
-        o.frequency.exponentialRampToValueAtTime(240, now + 0.16);
-        og.gain.setValueAtTime(vol*0.7, now);
-        og.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
-        o.connect(og); og.connect(audioCtx.destination);
-        o.start(now); o.stop(now + 0.18);
-      }
-      function quackDouble(){
-        quack({vol:0.14, when:0.00});
-        quack({vol:0.12, when:0.12});
-      }
-
-      // === Helper elemen visual juara ===
-      function addCrown(el){
-        if (!el.querySelector('.winner-crown')){
-          const c = document.createElement('div');
-          c.className = 'winner-crown';
-          el.appendChild(c);
-        }
-      }
-      function showSpotlightAt(x, y){
-        removeSpotlight();
-        const sp = document.createElement('div');
-        sp.className = 'spotlight';
-        sp.style.left = `${x}px`;
-        sp.style.top  = `${y}px`;
-        sp.style.transform = 'translate(-50%, -50%)';
-        document.body.appendChild(sp);
-      }
-      function removeSpotlight(){
-        const sp = document.querySelector('.spotlight');
-        if (sp) sp.remove();
-      }
-
       function reset(){
         cancelAnimationFrame(rafId);
         raceState = 'idle';
@@ -630,12 +484,7 @@
           d.el.style.setProperty('--x', '0px');
           d.el.querySelector('svg').style.animationPlayState = 'running';
           d.el.classList.remove('win');
-          const crown = d.el.querySelector('.winner-crown');
-          if (crown) crown.remove();
         });
-
-        finishEl.classList.remove('victory');
-        removeSpotlight();
 
         startBtn.disabled = false;
         resetBtn.disabled = true;
@@ -711,22 +560,16 @@
 
         const winner = [...ducks].sort((a,b)=>a.finishTime - b.finishTime)[0];
 
-        /* === Efek juara (glow + mahkota + spotlight + fanfare + quack + confetti + pita) === */
+        /* === Efek juara (glow + fanfare + confetti) === */
         if (winner && winner.el) {
           winner.el.classList.add('win');
-          addCrown(winner.el);
-
           if (typeof fanfare === 'function') fanfare();
-          if (typeof quackDouble === 'function') quackDouble();
 
           const finishRect = finishEl.getBoundingClientRect();
           const duckRect   = winner.el.getBoundingClientRect();
           const cx = finishRect.left - 6; // dekat garis finish
           const cy = duckRect.top + duckRect.height / 2;
           if (typeof spawnConfetti === 'function') spawnConfetti(cx, cy, 48);
-
-          showSpotlightAt(duckRect.left + duckRect.width/2, duckRect.top + duckRect.height/2);
-          finishEl.classList.add('victory');
         }
         /* === End efek juara === */
 
@@ -821,7 +664,7 @@
         }, 120);
       });
 
-      // Unlock audio di berbagai gesture & tab balik
+      // ==== Extra: Unlock audio di berbagai gesture & tab balik ====
       ['click','touchstart','keydown'].forEach(evt=>{
         window.addEventListener(evt, () => { if(audioCtx && audioCtx.state==='suspended') audioCtx.resume(); }, { once:false, passive:true });
       });
