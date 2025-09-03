@@ -120,7 +120,11 @@
     @keyframes winScale{ 0%,100%{ transform: translateY(0) scale(1) } 50%{ transform: translateY(3px) scale(1.08) } }
 
     /* Modal */
-    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; z-index:50; }
+    .modal-backdrop{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.45);
+      display:none; align-items:center; justify-content:center;
+      z-index: 9999;   /* <= dinaikkan */ }    
     .modal{ background:white; width:min(560px,92vw); border-radius:16px; box-shadow:var(--shadow); overflow:hidden; }
     .modal header{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px 16px; border-bottom:1px solid #e5e7eb; }
     .modal header h3{ margin:0; font-size:18px; font-weight:800; }
@@ -482,13 +486,23 @@
         src.start(now); src.stop(now+dur+0.01);
       }
       function crowdCheer(){
-        if(!audioCtx || !crowdGain) return;
-        const now = audioCtx.currentTime;
-        crowdGain.gain.setTargetAtTime(0.22, now, 0.09);
-        crowdGain.gain.exponentialRampToValueAtTime(0.06, now+0.8);
-        for(let i=0;i<8;i++){ setTimeout(()=> noiseBurst(0.11+Math.random()*0.06), 50 + i*90); }
-      }
-
+  if(!audioCtx) return;
+  const now = audioCtx.currentTime;
+  // sorakan pendek + tepuk tangan sintetis
+  for (let i = 0; i < 10; i++){
+    // “wooh” acak
+    const f = 320 + Math.random()*180;
+    tone(f, 0.10, i*0.035, 'square', 0.03);
+  }
+  // tepuk tangan noise sederhana
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type = 'triangle'; o.frequency.value = 120;
+  g.gain.setValueAtTime(0.02, now+0.08);
+  g.gain.exponentialRampToValueAtTime(0.0001, now+0.22);
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start(now+0.08); o.stop(now+0.24);
+}
       /* ===== Confetti ===== */
       function spawnConfetti(x, y, count=40){
         const colors = ['#fbbf24','#22c55e','#60a5fa','#f472b6','#ef4444','#a78bfa'];
@@ -564,14 +578,14 @@
         const winner = [...ducks].sort((a,b)=>a.finishTime - b.finishTime)[0];
 
         if (winner && winner.el) {
-          winner.el.classList.add('win');
-          if (typeof fanfare === 'function') fanfare();
-          crowdCheer(); // <-- sorakan
-          const finishRect = finishEl.getBoundingClientRect();
-          const duckRect   = winner.el.getBoundingClientRect();
-          const cx = finishRect.left - 6, cy = duckRect.top + duckRect.height / 2;
-          if (typeof spawnConfetti === 'function') spawnConfetti(cx, cy, 48);
-        }
+  winner.el.classList.add('win');
+  if (typeof fanfare === 'function') fanfare();
+  if (typeof crowdCheer === 'function') crowdCheer(); // <- aman
+  const finishRect = finishEl.getBoundingClientRect();
+  const duckRect   = winner.el.getBoundingClientRect();
+  const cx = finishRect.left - 6, cy = duckRect.top + duckRect.height / 2;
+  if (typeof spawnConfetti === 'function') spawnConfetti(cx, cy, 48);
+}
 
         const timeStr = winner.finishTime.toFixed(2).replace(/\.00$/,'');
         statusEl.textContent = `${reason==='all-finished' ? 'All finished.' : 'Time capped.'} Winner: ${winner.name} • ${timeStr}s`;
