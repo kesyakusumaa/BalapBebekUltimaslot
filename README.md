@@ -1,2 +1,0 @@
-# BalapBebekUltimaslot
-Balap Bebek Ultimaslot 🐤
